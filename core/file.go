@@ -20,7 +20,7 @@ type fileCtx struct {
 	Files    []os.File
 	Size     int64
 	osFile   *os.File
-	decode   Decode
+	decoder  Decoder
 }
 
 func (f *fileCtx) fileName() string {
@@ -43,7 +43,7 @@ func (f *fileCtx) size() int64 {
 	return f.Size
 }
 
-func NewFileCtx(completePath string, decode Decode) *fileCtx {
+func NewFileCtx(completePath string, decoder Decoder) *fileCtx {
 	file, err := os.Open(completePath)
 	if err != nil {
 		log.Fatal("Error to open file : ", completePath, "\n Error msg : ", err)
@@ -55,7 +55,7 @@ func NewFileCtx(completePath string, decode Decode) *fileCtx {
 		Size:     info.Size(),
 		IsDir:    info.IsDir(),
 		osFile:   file,
-		decode:   decode,
+		decoder:  decoder,
 	}
 	return ctx
 }

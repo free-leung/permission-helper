@@ -1,5 +1,6 @@
 package core
 
+/*
 import "flag"
 
 const (
@@ -32,4 +33,4 @@ func init() {
 	flag.Parse()
 	// User through the command to tell application operation model.
 	CmdMap[CONFIG] = cfgPath
-}
+}*/

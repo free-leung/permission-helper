@@ -5,7 +5,10 @@ import (
 )
 
 func TestFileContext(t *testing.T) {
-	fileCtx := NewFileCtx("/Users/ljackie/workspaces/go/permission-helper/RedisTokenManager.java", &JavaDecode{})
+	javaDecoder := &JavaDecoder{
+		delegator: &JavaApiDecoder{},
+	}
+	fileCtx := NewFileCtx("/Users/ljackie/workspaces/go/permission-helper/RedisTokenManager.java", javaDecoder)
 	ctx := ReadCtx{
 		MaxReadSize: 4 << 20, // 4M
 	}

@@ -1,21 +1,59 @@
 package core
 
-import "log"
+import (
+	"bytes"
+	"io"
+	"log"
+)
 
-type Decode interface {
-	setByte([]byte) Decode
-	decode()
+// Decoder To decode bytes.
+// Currently only JavaDecoder is available.
+type Decoder interface {
+	decode([]byte) interface{}
 }
 
-type JavaDecode struct {
-	data []byte
+type JavaDecoderDelegator interface {
+	Decoder
 }
 
-func (j *JavaDecode) setByte(bytes []byte) Decode {
-	j.data = bytes
-	return j
+// JavaDecoder decode .java file.
+// It's going to parse out a Model.
+// This model require extends Model.struct.
+type JavaDecoder struct {
+	delegator JavaDecoderDelegator
 }
 
-func (j *JavaDecode) decode() {
-	log.Print(string(j.data))
+func (j *JavaDecoder) decode(data []byte) interface{} {
+	return j.delegator.decode(data)
+}
+
+type JavaApiDecoder struct {
+}
+
+// decode The function from JavaApiDecoder.
+// It's not easy to read
+func (apiDecoder *JavaApiDecoder) decode(data []byte) interface{} {
+	// Read bytes.
+	bufferReaders := bytes.NewBuffer(data)
+
+	// Create byteBuffer by syn pool.
+	bytesBufferPool := CreateByteBufferPool()
+	bytesBuffer := bytesBufferPool.Get().(bytes.Buffer)
+	for {
+		content, err := bufferReaders.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				log.Print("Read bytes completes!")
+				break
+			} else {
+				log.Fatal("Read line content err: ", err)
+			}
+		}
+		bytesBuffer.Write(content)
+		log.Print(bytesBuffer.Bytes())
+		log.Print(bytesBuffer.String())
+		// '\n' cut a line
+		bytesBuffer.Reset()
+	}
+	return nil
 }

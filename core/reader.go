@@ -11,6 +11,7 @@ var waitGroup sync.WaitGroup
 
 type Reader interface {
 	read(fileCtx *fileCtx)
+	readByLine(fileCtx *fileCtx)
 }
 
 type ReadCtx struct {
@@ -30,7 +31,6 @@ func (rctx ReadCtx) read(fileCtx *fileCtx) {
 		readBytes := synPool.Get().([]byte)
 		// Do read and that read data send in readBytes.
 		len, err := reader.Read(readBytes)
-		rctx.data = readBytes[:len]
 		// If read len just 0, That means we got the tail or cause err.
 		if len == 0 {
 			if err == io.EOF {
@@ -43,7 +43,7 @@ func (rctx ReadCtx) read(fileCtx *fileCtx) {
 		}
 		waitGroup.Add(1)
 		go func() {
-			fileCtx.decode.setByte(rctx.data).decode()
+			fileCtx.decoder.decode(readBytes[:len])
 			waitGroup.Done()
 		}()
 	}
