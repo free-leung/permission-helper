@@ -35,6 +35,10 @@ func BytesToApiModel(byte []byte) *ApiModel {
 	// Determines whether the byte is empty
 	if len(byte) > 0 && bytes.Equal(byte, blankLine) {
 
+		if bytes.Contains(apiTag, byte) {
+
+		}
 	}
+
 	return nil
 }
